@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 typedef struct arvore{
 	struct arvore *dir;
@@ -15,7 +16,7 @@ typedef struct arvore{
 typedef struct no{
 	struct no *prox;
 	Arvore *lp;
-	int Np;
+	int np;
 	char id[8];
 	char destino[4];
 	char empresa[20];
@@ -28,25 +29,21 @@ typedef struct fila{
 } Fila;
 
 Fila *voos;
-/* arranjos tecnicos */
-int escreverArquivo();
+/* HEADER*/
+int escreverArquivo(); /* TODO */
 /* programa */
-Fila *add_voos(Fila *);
-Arvore *add_nome(Arvore *);
-Arvore *rem_nome(Arvore *);
-void listar(Fila *);
-Fila *aut_voo(Fila *);
-void listar_voos(Fila *);
-void listar_dados(Fila *);
-void listar_passageiros(Fila*);
-/* implementação filas */
-Fila *add_fila(Fila *, No*);
-Fila *rem_fila(Fila *);
-int cont_fila(Fila *);
+Fila *add_voos(Fila *); /* OK +- */
+Arvore *add_nome(Arvore *); /* TODO */
+Arvore *rem_nome(Arvore *); /* TODO */
+void listar(Fila *); /* OK lista 1o voo sem os passageiros. */
+Fila *aut_voo(Fila *); /* OK */
+void listar_voos(Fila *); /* OK */
+void listar_dados(Fila *); /* TODO */
+void listar_passageiros(Fila*); /* TODO */
 /* implementação arvores */
-Arvore *add_arvore(Arvore *);
-Arvore *rem_arvore(Arvore *);
-void print_arvore(Arvore *);
+Arvore *add_arvore(Arvore *, char*); /* TODO */
+Arvore *rem_arvore(Arvore *, char*); /* TODO */
+void print_arvore(Arvore *); /* TODO */
 
 /* TODO tudo.. */
 int main(int argc, char** argv){
@@ -68,9 +65,33 @@ int escreverArquivo(){
 	fclose(ARQUIVO);
 	return 0;
 }
+
 Fila *add_voos(Fila* voos){
 	
 	No *aux = (No*) malloc(sizeof(No));
+
+	char *id;
+	char *destino;
+	char *empresa;
+	char *modelo;
+	
+	printf("Entre com a empresa: ");
+	scanf("%20s", empresa);
+	printf("\nEntre com o modelo: ");
+	scanf("%20s", modelo);
+	printf("\nEntre com o ID: ");
+	scanf("%8s", id);
+	printf("\nEntre com o destino: ");
+	scanf("%4s", destino);
+		
+	strcpy(aux->destino, destino);
+	strcpy(aux->modelo, modelo);
+	strcpy(aux->id, id);
+	strcpy(aux->empresa, empresa);
+	aux->np = -1;
+	aux->lp = (Arvore*) NULL;
+	
+	/*TODO adicionar passageiros e lista. */
 	
 	if(voos == NULL){
 		voos->comeco = aux;
@@ -81,9 +102,39 @@ Fila *add_voos(Fila* voos){
 	}
 	
 	voos->fim->prox = aux;
-	aux->prox = voos->comeco;
+	aux->prox = (No*) NULL;
 	voos->fim = aux;
 
 	return voos;
 	
+}
+Fila *aut_voo(Fila *voos){
+	No *aux = (No*) malloc(sizeof(No));
+	aux = voos->comeco;
+	printf("Autorizando voo %s %s %s %s\n",aux->modelo, aux->id, aux->empresa, aux->destino );
+	voos->comeco = aux->prox;
+	free(aux);
+	
+	return voos;
+}
+void lista(Fila *voos){
+	printf("Seguem as informações do 1o voo\n\tModelo: %s\n\tEmpresa: %s\n\tID: %s\n\tDestino: %s, No. de passageiros: %d\n", voos->comeco->modelo, voos->comeco->empresa, voos->comeco->destino, voos->comeco->id, voos->comeco->np);
+}
+
+void listar_voos(Fila *voos){
+	No *aux = (No*) malloc(sizeof(Fila));
+
+	aux = voos->comeco;
+	int i;
+	for(i = 0; aux != NULL; i++){
+		aux = aux->prox;
+	}
+	printf("Há %d voos na fila\n", i);
+}
+
+/* ARVORES VSFFFFF */
+
+Arvore *add_arvore(Arvore *arvore, char *nome){
+	
+	return arvore;
 }
