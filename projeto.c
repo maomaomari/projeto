@@ -66,9 +66,40 @@ void rotacaoLR(Arvore *); /* OK */
 
 /* TODO tudo.. */
 int main(int argc, char** argv){
+	
+	printf("Escolha uma operação:\n1:Cadastrar voos.\n2:Remover nome da lista de passageiros\n3:Listar 1o voo\n4:Autorizar decolagem voo\n5:Listar passageiros determinado voo\n0: Sair\n");
+	int q;
+	do{
+		scanf("%d", &q);
+		switch(q){
+			case 1:
+				add_voos(voos);
+			case 2:
+				char *nome;
+				No *aux = (No*) malloc(sizeof(No));
+				int esc;
+				aux = voos->comeco;
+				for (int i = 1; aux != NULL; i++){
+					printf("%d: %s %s\n", i, aux->empresa, aux->id);
+					aux = aux->prox;
+				}
+				aux = voos->comeco;
+				printf("Escolha o voo: ");
+				scanf("%d", &esc);
+				for (int i = 0; i < esc; i++)
+					aux = aux->prox;
+				printf("\nEntre com o nome a ser removido");
+				scanf("%s", nome);
+				rem_arvore(aux->lp, nome);
+			case 3:
+				listar(voos);
+			case 4:
+				aut_voo(voos);
+			case 5:
+				listar_passageiros(voos);
+		}
+	}while(q != 0);
 
-
-	escreverArquivo();
 	return 0;
 }
 int escreverArquivo(){
@@ -88,13 +119,12 @@ int escreverArquivo(){
 Fila *add_voos(Fila* voos){
 	
 	No *aux = (No*) malloc(sizeof(No));
-
-	char *id;
-	char *destino;
-	char *empresa;
-	char *modelo;
-	char *nome;
-
+	char id[9];
+	char destino[5];
+	char empresa[21];
+	char modelo[21];
+	char *nome = malloc(sizeof(char)*40);
+	nome = ";";
 	
 	printf("Entre com a empresa: ");
 	scanf("%20s", empresa);
@@ -110,16 +140,16 @@ Fila *add_voos(Fila* voos){
 	strcpy(aux->id, id);
 	strcpy(aux->empresa, empresa);
 
-	printf("Adicione os passageiros: (0 para sair)");
+	printf("Adicione os passageiros: (; para sair)\n");
 	do{
 		scanf("%30s", nome);
+		if(strcmp(nome, ";"))
+			break;
 		insere_arvore(aux->lp, nome);
 		printf("\nnome adicionado!\n");
-	}while (nome[0] != '0');
-
+	}while (1);
+	printf("saindo loop.");
 	aux->np = total_arvore(aux->lp);
-	/*TODO adicionar passageiros e lista. */
-	
 	if(voos == NULL){
 		voos->comeco = aux;
 		voos->fim = aux;
@@ -144,7 +174,7 @@ Fila *aut_voo(Fila *voos){
 	
 	return voos;
 }
-void lista(Fila *voos){
+void listar(Fila *voos){
 	printf("Seguem as informações do 1o voo\n\tModelo: %s\n\tEmpresa: %s\n\tID: %s\n\tDestino: %s, No. de passageiros: %d\n", voos->comeco->modelo, voos->comeco->empresa, voos->comeco->destino, voos->comeco->id, voos->comeco->np);
 }
 
@@ -210,7 +240,7 @@ void rotacaoRL(Arvore *arvore){
 }
 
 /* TODO reimplementar pra aceitar char* e andar pela string quando a 1a letra for repetida */
-int insere_arvore(Arvore *arvore, char* dado){
+int insere_arvore(Arvore *arvore, char *dado){
     int res;
     if(arvore == NULL){
         Arvore *novo;
@@ -226,10 +256,10 @@ int insere_arvore(Arvore *arvore, char* dado){
         return 1;
     }
     Arvore *atual = arvore;
-    if(dado < atual->nome){
+    if(dado[0] < atual->nome[0]){
         if((res = insere_arvore(atual->esq, dado)) == 1){
             if(fator_balanceamento(atual) >= 2){
-                if(dado < arvore->esq->nome){
+                if(dado[0] < arvore->esq->nome[0]){
                     rotacaoLL(arvore);
                 }else{
                     rotacaoLR(arvore);
@@ -237,10 +267,10 @@ int insere_arvore(Arvore *arvore, char* dado){
             }
         }
     }else{
-        if(dado > atual->nome){
+        if(dado[0] > atual->nome[0]){
             if((res = insere_arvore(atual->dir, dado)) == 1){
                 if(fator_balanceamento(atual) >= 2){
-                    if(arvore->dir->nome < dado){
+                    if(arvore->dir->nome[0] < dado[0]){
                         rotacaoRR(arvore);
                     }else{
                         rotacaoRL(arvore);
@@ -401,7 +431,7 @@ void print_arvore(Arvore *arvore){
 }
 
 
-void listar_passageros(Fila* voos){
+void listar_passageiros(Fila* voos){
 	No *aux = (No*) malloc(sizeof(No));
 	int q = 1;
 	aux = voos->comeco;
