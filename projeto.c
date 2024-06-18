@@ -26,10 +26,10 @@ typedef struct no{
 	struct no *prox;
 	Arvore *lp;
 	int np;
-	char id[8];
-	char destino[4];
-	char empresa[20];
-	char modelo[20];
+	char *id;
+	char *destino;
+	char *empresa;
+	char *modelo;
 } No;
 
 typedef struct fila{
@@ -40,7 +40,7 @@ typedef struct fila{
 Fila *voos;
 /* HEADER*/
 
-int escreverArquivo(); /* TODO */
+int escreverArquivo(char*); /* TODO */
 /* programa */
 Fila *add_voos(Fila *); /* OK */
 void listar(Fila *); /* OK lista 1o voo sem os passageiros. */
@@ -66,18 +66,25 @@ void rotacaoLR(Arvore *); /* OK */
 
 /* TODO tudo.. */
 int main(int argc, char** argv){
+
 	
-	printf("Escolha uma operação:\n1:Cadastrar voos.\n2:Remover nome da lista de passageiros\n3:Listar 1o voo\n4:Autorizar decolagem voo\n5:Listar passageiros determinado voo\n0: Sair\n");
+	
+	voos = (Fila*)malloc(sizeof(Fila));
+	voos->comeco = (No*) malloc(sizeof(No));
+	voos->fim = (No*) malloc(sizeof(No));
+	voos = (Fila*) NULL;
 	int q;
+	char nome[40];
+	No *aux = (No*) malloc(sizeof(No));
+	int esc;
 	do{
-		scanf("%d", &q);
+		printf("Escolha uma operação:\n1:Cadastrar voos.\n2:Remover nome da lista de passageiros\n3:Listar 1o voo\n4:Autorizar decolagem voo\n5:Listar passageiros determinado voo\n0: Sair\n");
+		char q = getchar();
 		switch(q){
-			case 1:
-				add_voos(voos);
-			case 2:
-				char *nome;
-				No *aux = (No*) malloc(sizeof(No));
-				int esc;
+			case '1':
+		 		voos = add_voos(voos);
+				break;
+			case '2':
 				aux = voos->comeco;
 				for (int i = 1; aux != NULL; i++){
 					printf("%d: %s %s\n", i, aux->empresa, aux->id);
@@ -91,18 +98,24 @@ int main(int argc, char** argv){
 				printf("\nEntre com o nome a ser removido");
 				scanf("%s", nome);
 				rem_arvore(aux->lp, nome);
-			case 3:
+				break;
+			case '3':
 				listar(voos);
-			case 4:
-				aut_voo(voos);
-			case 5:
+				break;
+			case '4':
+				voos = aut_voo(voos);
+				break;
+			case '5':
 				listar_passageiros(voos);
+				break;
+			default:
+				break;
 		}
-	}while(q != 0);
+	}while(q != '0');
 
 	return 0;
 }
-int escreverArquivo(){
+int escreverArquivo(char *nome){
 
 	char *arquivo = "lista.txt";
 	
@@ -111,61 +124,64 @@ int escreverArquivo(){
 		printf("erro ao abrir o arquivo");
 		return -1;
 			}
-	
+	fprintf(ARQUIVO, "%s\n", nome);
+
 	fclose(ARQUIVO);
 	return 0;
 }
 
-Fila *add_voos(Fila* voos){
-	
+Fila *add_voos(Fila* voo){
+
+	Fila* aux2 = (Fila*) malloc(sizeof(Fila));
 	No *aux = (No*) malloc(sizeof(No));
-	char id[9];
-	char destino[5];
-	char empresa[21];
-	char modelo[21];
-	char *nome = malloc(sizeof(char)*40);
-	nome = ";";
-	
-	printf("Entre com a empresa: ");
-	scanf("%20s", empresa);
-	printf("\nEntre com o modelo: ");
-	scanf("%20s", modelo);
-	printf("\nEntre com o ID: ");
-	scanf("%8s", id);
-	printf("\nEntre com o destino: ");
-	scanf("%4s", destino);
-		
-	strcpy(aux->destino, destino);
-	strcpy(aux->modelo, modelo);
-	strcpy(aux->id, id);
-	strcpy(aux->empresa, empresa);
+	char id[9] = "asd";
+	char destino[5] = "qwe";
+	char empresa[21] = "TAN";
+	char modelo[21] = "Boeing";
+	char nome[40];
+	voo->comeco = (No*) malloc(sizeof(No));
+	voo->fim = (No*) malloc(sizeof(No));
+	//printf("Entre com a empresa: ");
+	//scanf("%20s", empresa);
+	//printf("\nEntre com o modelo: ");
+	//scanf("%20s", modelo);
+	//printf("\nEntre com o ID: ");
+	//scanf("%8s", id);
+	//	printf("\nEntre com o destino: ");
+	//	scanf("%4s", destino);	
+	aux->destino = destino;
+	aux->modelo = modelo;
+	aux->id = id;
+	aux->empresa = empresa;
 
 	printf("Adicione os passageiros: (; para sair)\n");
 	do{
 		scanf("%30s", nome);
-		if(strcmp(nome, ";"))
-			break;
 		insere_arvore(aux->lp, nome);
 		printf("\nnome adicionado!\n");
-	}while (1);
-	printf("saindo loop.");
+	}while (strcmp(nome, ";") != 0);
+	
 	aux->np = total_arvore(aux->lp);
-	if(voos == NULL){
-		voos->comeco = aux;
-		voos->fim = aux;
-		voos->comeco->prox = aux;
-		voos->fim->prox = aux;
-		return voos;
+	
+	if(voo == NULL){
+		voo->comeco = aux;
+		voo->fim = aux;
+		voo->comeco->prox = NULL;
+		voo->fim->prox = NULL;
+		return voo;
 	}
 	
-	voos->fim->prox = aux;
+	voo->fim->prox = aux;
 	aux->prox = (No*) NULL;
-	voos->fim = aux;
+	voo->fim = aux;
 
-	return voos;
-	
+	return voo;
 }
 Fila *aut_voo(Fila *voos){
+	if(voos->comeco == NULL){
+		printf("sem voos para autorizar\n");
+		return NULL;
+	}
 	No *aux = (No*) malloc(sizeof(No));
 	aux = voos->comeco;
 	printf("Autorizando voo %s %s %s %s\n",aux->modelo, aux->id, aux->empresa, aux->destino );
@@ -175,6 +191,10 @@ Fila *aut_voo(Fila *voos){
 	return voos;
 }
 void listar(Fila *voos){
+	if(voos->comeco== NULL){
+		printf("sem voos");
+		return;
+	}
 	printf("Seguem as informações do 1o voo\n\tModelo: %s\n\tEmpresa: %s\n\tID: %s\n\tDestino: %s, No. de passageiros: %d\n", voos->comeco->modelo, voos->comeco->empresa, voos->comeco->destino, voos->comeco->id, voos->comeco->np);
 }
 
@@ -188,8 +208,6 @@ void listar_voos(Fila *voos){
 	}
 	printf("Há %d voos na fila\n", i);
 }
-
-/* ARVORES VSFFFFF */
 
 Arvore *criar_arvore(){
 
@@ -427,6 +445,7 @@ void print_arvore(Arvore *arvore){
 		return;
 	print_arvore(arvore->esq);
 	printf("%s ", arvore->nome);
+	escreverArquivo(arvore->nome);
 	print_arvore(arvore->dir);
 }
 
